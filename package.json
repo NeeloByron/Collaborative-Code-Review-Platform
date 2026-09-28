@@ -1,0 +1,32 @@
+{
+  "name": "collaborative-code-review-platform",
+  "version": "1.0.0",
+  "description": "1. npm init -y",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NeeloByron/Collaborative-Code-Review-Platform.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NeeloByron/Collaborative-Code-Review-Platform/issues"
+  },
+  "homepage": "https://github.com/NeeloByron/Collaborative-Code-Review-Platform#readme",
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.3",
+    "@types/pg": "^8.23.1",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2"
+  }
+}
