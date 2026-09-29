@@ -26,3 +26,9 @@ collaborative-code-review-platform/
 3. npm i -D typescript ts-node nodemon @types/node @types/express @types/pg
 
 4. npx tsc --init
+
+### Database Setup
+
+Created the users, projects, submissions, and comments tables using PostgreSQL in pgAdmin.
+
+![Creating database tables in pgAdmin](Assets/CreateTable.png)
