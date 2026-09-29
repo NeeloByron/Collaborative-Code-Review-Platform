@@ -1,6 +1,8 @@
 # Code Collaborative Review
 
 ## Project structure
+
+```text
 collaborative-code-review-platform/
 ├── src/
 │   ├── config/
@@ -17,6 +19,7 @@ collaborative-code-review-platform/
 ├── .gitignore
 ├── package.json
 └── tsconfig.json
+```
 
 ### setup
 1. npm init -y
