@@ -1,12 +1,13 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "collaborative-code-review-platform",
   "version": "1.0.0",
   "description": "1. npm init -y",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/server.ts",
-    "dev": "nodemon --exec ts-node src/server.ts"
+    "start": "tsx src/server.ts",
+    "dev": "nodemon --exec tsx src/server.ts"
   },
   "keywords": [],
   "type": "commonjs",
@@ -20,7 +21,7 @@
     "@types/node": "^26.6.3",
     "@types/pg": "^8.23.1",
     "nodemon": "^3.1.14",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
 }
