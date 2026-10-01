@@ -1,7 +1,7 @@
 -- stores users and their roles
 CREATE TABLE users (
    id SERIAL PRIMARY KEY,
-   name VARCHAR(100) NOT FULL,
+   name VARCHAR(100) NOT NULL,
    email VARCHAR(255) UNIQUE NOT NULL,
    password_hash TEXT NOT NULL, -- stores the hashed password
    role VARCHAR(20) DEFAULT 'submitter'
@@ -13,8 +13,8 @@ CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     description TEXT,
-    owner_id INTEGER NOT FULL REFERENCES users(id) -- links back to user table
-)
+    owner_id INTEGER NOT NULL REFERENCES users(id) -- links back to user table
+);
 
 -- stores code submitted for review
 CREATE TABLE submissions (
@@ -36,4 +36,4 @@ CREATE TABLE comments (
     author_id INTEGER NOT NULL REFERENCES users(id) -- links back to users table
     content TEXT NOT NULL
     line_number INTEGER -- NULL for general feedback, line number for inline feedback
-)
+);
