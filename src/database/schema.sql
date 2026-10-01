@@ -19,8 +19,8 @@ CREATE TABLE projects (
 -- stores code submitted for review
 CREATE TABLE submissions (
     id SERIAL PRIMARY KEY,
-    project_id INTEGER NOT NULL REFERENCES projects(id) -- links back to projects table
-    submitter_id INTEGER NOT NULL REFERENCES users(id) -- links back to users table
+    project_id INTEGER NOT NULL REFERENCES projects(id), -- links back to projects table
+    submitter_id INTEGER NOT NULL REFERENCES users(id), -- links back to users table
     title VARCHAR(200) NOT NULL,
     code TEXT NOT NULL,
     status VARCHAR(30) DEFAULT 'pending' 
@@ -32,8 +32,8 @@ CREATE TABLE submissions (
 -- stores feedback on submissions 
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,
-    submission_id INTEGER NOT NULL REFERENCES submissions(id) -- links back to submissions table
-    author_id INTEGER NOT NULL REFERENCES users(id) -- links back to users table
-    content TEXT NOT NULL
+    submission_id INTEGER NOT NULL REFERENCES submissions(id), -- links back to submissions table
+    author_id INTEGER NOT NULL REFERENCES users(id), -- links back to users table
+    content TEXT NOT NULL,
     line_number INTEGER -- NULL for general feedback, line number for inline feedback
 );
