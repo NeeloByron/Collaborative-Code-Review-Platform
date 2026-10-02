@@ -1,6 +1,6 @@
 export type UserRole = "reviewer" | "submitter"; 
 
-// a user interface that represents the structure of a user object in the system
+// Represent a user in the system
 export interface User {
     id: number;
     name: string;
@@ -9,17 +9,15 @@ export interface User {
     role: UserRole;
 }
 
-// an interface that represents the structure of a user registration object
-export interface RegisterUser {
-    name: string;
-    email: string;
+// Represent the information needed to register
+export type RegisterUser = Pick<User, "name" | "email" | "role"> & {
     password: string;
-    role: UserRole;
-}
+};
 
-// an interface that represents the structure of a user login object
-export interface LoginUser {
-    email: string;
+// Represent the information needed to login 
+export type LoginUser = Pick<User, "email"> & {
     password: string;
-}
+};  
 
+// removes password_hash when returning user information 
+export type PublicUser = Omit<User, "password_hash">;
