@@ -1,43 +1,119 @@
 # Code Collaborative Review
 
-## Project structure
+A REST API for a collaborative code review platform where users can submit code, review submissions, provide feedback, and manage review workflows.
+
+## Project Structure
 
 ```text
-collaborative-code-review-platform/
+Collaborative-Code-Review-Platform/
 ├── src/
 │   ├── config/
-│   │   └── db.ts
+│   │   └── database.ts
 │   ├── controllers/
-│   ├── middleware/
+│   │   └── authController.ts
+│   ├── database/
+│   │   └── schema.sql
 │   ├── routes/
-│   ├── app.ts
+│   │   └── authRoutes.ts
+│   ├── service/
+│   │   └── userServices.ts
+│   ├── types/
+│   │   └── application.types.ts
 │   └── server.ts
-├── database/
-│   └── schema.sql
+├── Assets/
 ├── .env
-├── .env.example
 ├── .gitignore
 ├── package.json
+├── package-lock.json
 └── tsconfig.json
 ```
 
-### setup
-1. npm init -y
+## Setup
 
-2. npm i express pg dotenv
+1. Initialize the project:
 
-3. npm i -D typescript ts-node nodemon @types/node @types/express @types/pg
+```bash
+npm init -y
+```
 
-4. npx tsc --init
+2. Install the main dependencies:
 
-## Registration/Password hashing 
+```bash
+npm install express pg dotenv
+```
 
-5. npm install bcrypt jsonwebtoken
+3. Install the development dependencies:
 
-6. npm install -D @types/bcrypt @types/jsonwebtoken
+```bash
+npm install -D typescript nodemon @types/node @types/express @types/pg tsx
+```
 
-### Database Setup
+4. Initialize TypeScript:
 
-Created the users, projects, submissions, and comments tables using PostgreSQL in pgAdmin.
+```bash
+npx tsc --init
+```
 
-![Creating database tables in pgAdmin](Assets/CreateTable.png)
+## Authentication Setup
+
+Install bcrypt and JSON Web Token:
+
+```bash
+npm install bcrypt jsonwebtoken
+```
+
+Install their TypeScript types:
+
+```bash
+npm install -D @types/bcrypt @types/jsonwebtoken
+```
+
+## Database Setup
+
+PostgreSQL is used as the database.
+
+The database contains the following tables:
+
+- `users`
+- `projects`
+- `submissions`
+- `comments`
+
+The SQL schema can be found in:
+
+```text
+src/database/schema.sql
+```
+
+## Sprint 2 - Authentication & User Management
+
+### Register User
+
+**Endpoint**
+
+```http
+POST /api/auth/register
+```
+
+Registers a new user as either a `submitter` or `reviewer`.
+
+**Example Request**
+
+```json
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123",
+  "role": "submitter"
+}
+```
+
+**Result**
+
+```text
+201 Created
+```
+
+<p align="center">
+  <img src="./Assets/registerUser.png" alt="POST Register User - 201 Created" width="900">
+</p>
