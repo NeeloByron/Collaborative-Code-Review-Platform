@@ -117,3 +117,34 @@ Registers a new user as either a `submitter` or `reviewer`.
 <p align="center">
   <img src="./Assets/registerUser.png" alt="POST Register User - 201 Created" width="900">
 </p>
+
+### Login User
+
+**Endpoint**
+
+```http
+POST /api/auth/login
+```
+
+Logs in a registered user using their email and password. Returns a JWT token that expires after one hour.
+
+**Example Request**
+
+```json
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
+
+**Result**
+
+```text
+200 OK
+```
+
+The response contains a login token and the user's ID, name, email, and role. The password and password hash are not returned.
+
+<p align="center">
+  <img src="./Assets/login.png" alt="POST Login User - 200 OK" width="900">
+</p>
