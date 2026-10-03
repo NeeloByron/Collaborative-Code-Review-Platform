@@ -2,16 +2,12 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "collaborative-code-review-platform",
   "version": "1.0.0",
-  "description": "REST API for collaborative code reviews with JWT authentication and user profiles",
-  "main": "dist/server.js",
+  "description": "1. npm init -y",
+  "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "nodemon --exec tsx src/server.ts",
-    "predev": "npm run db:migrate",
-    "prestart": "npm run db:migrate",
-    "db:migrate": "node scripts/migrate.cjs",
-    "test": "npm run build && node --test tests/*.test.cjs"
+    "start": "tsx src/server.ts",
+    "dev": "nodemon --exec tsx src/server.ts"
   },
   "keywords": [],
   "type": "commonjs",
@@ -23,7 +19,6 @@
     "pg": "^8.23.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.8",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
