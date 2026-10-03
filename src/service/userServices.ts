@@ -1,5 +1,16 @@
 import { query } from '../config/database';
-import { RegisterUser, User } from '../types/application.types';
+import { RegisterUser, User, PublicUser } from '../types/application.types';
+
+// find a user by ID without returning their password hash
+export const findUserById = async (
+    id: number
+): Promise<PublicUser | null> => {
+    const result = await query(
+        "SELECT id, name, email, role FROM users WHERE id = $1",
+         [id]
+    );
+    return result.rows[0] ?? null;
+}
 
 // find a user by their email 
 export const findUserByEmail = async (email: string): Promise<User | null> => {

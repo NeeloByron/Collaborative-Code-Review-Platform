@@ -59,11 +59,11 @@ export const authenticate = (
 
         // attach the verified information to this request 
             req.user = {
-                        id: decoded.id,
-                      role: decoded.role
+                id: decoded.id,
+                role: decoded.role
               };
-        } catch {
-                 res.status(401).json({
+          } catch {
+          res.status(401).json({
                  message: "Invalid or expired token"
           });
           return;
