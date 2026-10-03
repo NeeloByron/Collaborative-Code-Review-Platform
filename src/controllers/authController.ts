@@ -44,13 +44,12 @@ export const registerUser = async (req: Request, res: Response) => {
             role
         },
          passwordHash
-         
        );
 
        // Do not return password_hash
        const { password_hash, ...publicUser} = newUser;
 
-    return res.status(201).json({
+       return res.status(201).json({
         message: "User registered successfully",
         user: publicUser
 
@@ -73,7 +72,7 @@ export const registerUser = async (req: Request, res: Response) => {
             // check that email and password are non empty strings
             if (
                 typeof email !== "string" || !email.trim() || typeof password !== "string" || !password.trim()) {
-                    return res.status(400).json({
+                      return res.status(400).json({
                         message: "Email and password are required"
                     });
                 }
@@ -88,11 +87,51 @@ export const registerUser = async (req: Request, res: Response) => {
             }
 
             // compare the supplied password with the saved hash
-            const passwordMatches {
+            const passwordMatches = await bcrypt.compare(password, user.password_hash);
+
+             if (!passwordMatches) {
                 return res.status(401).json({
-                    message: "Invalid email or pass"
+                    message: "Invalid email or password"
                 });
             }
+
+            // Read the private key used to sign login tokens
+            const jwtSecret = process.env.JWT_SECRET; 
+
+            if (!jwtSecret) {
+                console.error("JWT_SECRET is not configured");
+
+                return res.status(500).json({
+                    message: "Internal server error"
+                });
+            }
+
+            // create a signed token that expires after 1 hour
+            const token = jwt.sign(
+                { 
+                  id: user.id,
+                  role: user.role
+                },
+                 jwtSecret,
+                { expiresIn: "1h" }
+            );
             
+            // return only safe user details
+            return res.status(200).json({
+                message: "Login successful",
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }
+            });
+        } catch (error) {
+            console.error(error);
+
+            return res.status(500).json({
+                message: "Internal server error"
+            });
         }
-    }
+    };
