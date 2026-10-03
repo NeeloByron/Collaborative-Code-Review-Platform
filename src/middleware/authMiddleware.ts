@@ -1,74 +1,39 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { UserRole } from "../types/application.types";
+import { findUserById } from "../service/userServices";
+import { AppError } from "./errorHandler";
 
-// Describe the user information stored inside our token
-interface AuthUser {
-    id: number;
-    role: "reviewer" | "submitter";
-}
-
-// allow protected requests to carry the verified user
 export interface AuthRequest extends Request {
-    user?: AuthUser;
+    user?: { id: number; role: UserRole };
 }
 
-// check the login token before allowing a request through
-export const authenticate = (
-    req: AuthRequest, res: Response, next: NextFunction
-): void => {
-    const authorization = req.headers.authorization;
-
-    // expect a header containing: Bearer followed by the token
-    const parts = authorization?.trim().split(/\s+/);
-    if (
-        !parts || parts.length !== 2 || parts[0].toLowerCase() !== "bearer") {
-            res.status(401).json({
-                message: "A Bearer token is required"
-            });
-            return;
+export const authenticate = async (
+    req: AuthRequest, _res: Response, next: NextFunction
+): Promise<void> => {
+    try {
+        const parts = req.headers.authorization?.trim().split(/\s+/);
+        if (!parts || parts.length !== 2 || parts[0].toLowerCase() !== "bearer") {
+            throw new AppError("A Bearer token is required", 401);
         }
-        
-        const token = parts[1];
-        const jwtSecret = process.env.JWT_SECRET;
-
-        // a missing server setting is a configuration error
-        if (!jwtSecret) {
-           console.error("JWT_SECRET is not configured");
-
-           res.status(500).json({
-            message: "Internal server error"
-           });
-           return;
-        }
-        
+        const secret = process.env.JWT_SECRET;
+        if (!secret) throw new Error("JWT_SECRET is not configured");
+        let decoded;
         try {
-            // check the token's signature and expiry
-            const decoded = jwt.verify(token, jwtSecret, {
-                algorithms: ["HS256"]
-            });
-
-            // confirm the token contains the user details we expect
-         if (
-             typeof decoded === "string" || typeof decoded.id !== "number" || !Number.isInteger(decoded.id) || decoded.id <= 0 || (decoded.role !== "reviewer" &&
-                    decoded.role !== "submitter")) {
-                        res.status(401).json({
-                        message: "Invalid token"
-                     });
-                     return;
-                }
-
-        // attach the verified information to this request 
-            req.user = {
-                id: decoded.id,
-                role: decoded.role
-              };
-          } catch {
-          res.status(401).json({
-                 message: "Invalid or expired token"
-          });
-          return;
+            decoded = jwt.verify(parts[1], secret, { algorithms: ["HS256"] });
+        } catch {
+            throw new AppError("Invalid or expired token", 401);
         }
-
-    // The token passed the checks; continue to the next handler
-    next();
+        if (typeof decoded === "string" || typeof decoded.id !== "number" ||
+            !Number.isInteger(decoded.id) || decoded.id <= 0 || decoded.id > 2147483647 ||
+            typeof decoded.exp !== "number" ||
+            (decoded.role !== "reviewer" && decoded.role !== "submitter")) {
+            throw new AppError("Invalid token", 401);
+        }
+        // Reload the account so deleted accounts and outdated roles cannot use old tokens.
+        const user = await findUserById(decoded.id);
+        if (!user) throw new AppError("Account no longer exists; please register or log in again", 401);
+        req.user = { id: user.id, role: user.role };
+        next();
+    } catch (error) { next(error); }
 };

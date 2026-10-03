@@ -3,6 +3,7 @@ CREATE TABLE users (
    id SERIAL PRIMARY KEY,
    name VARCHAR(100) NOT NULL,
    email VARCHAR(255) UNIQUE NOT NULL,
+   display_picture TEXT, -- optional HTTP(S) image URL
    password_hash TEXT NOT NULL, -- stores the hashed password
    role VARCHAR(20) DEFAULT 'submitter'
         CHECK (role IN ('reviewer', 'submitter'))

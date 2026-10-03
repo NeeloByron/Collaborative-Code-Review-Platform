@@ -1,13 +1,8 @@
 import { Router } from "express";
 import { registerUser, loginUser } from "../controllers/authController";
-import { authenticate, AuthRequest  } from "../middleware/authMiddleware";
+import { validateRegistration, validateLogin } from "../middleware/validationMiddleware";
 
 const router = Router();
-
-// POST /api/auth/register
-router.post("/register", registerUser);
-
-// POST /api/auth/login
-router.post("/login", loginUser);
-
+router.post("/register", validateRegistration, registerUser);
+router.post("/login", validateLogin, loginUser);
 export default router;
