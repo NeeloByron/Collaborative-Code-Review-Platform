@@ -148,3 +148,53 @@ The response contains a login token and the user's ID, name, email, and role. Th
 <p align="center">
   <img src="./Assets/login.png" alt="POST Login User - 200 OK" width="900">
 </p>
+
+### View User Profile
+
+Retrieves the authenticated user's own profile. Users cannot access another user's profile.
+
+**Endpoint**
+
+```http
+GET /api/users/:id
+```
+
+Replace `:id` with the user ID returned during login.
+
+**Example Request**
+
+```http
+GET http://localhost:5000/api/users/1
+Authorization: Bearer <your_login_token>
+```
+
+In Postman, select **Authorization → Bearer Token** and paste the token received during login. No request body is required.
+
+**Successful Response — 200 OK**
+
+```json
+{
+  "message": "Profile retrieved successfully",
+  "user": {
+    "id": 1,
+    "name": "Test User",
+    "email": "test@example.com",
+    "role": "submitter"
+  }
+}
+```
+
+**Error Responses**
+
+| Status | Meaning |
+|---|---|
+| 400 Bad Request | Invalid user ID. |
+| 401 Unauthorized | Missing, invalid, or expired token. |
+| 403 Forbidden | Attempting to access another user's profile. |
+| 404 Not Found | The authenticated user's account no longer exists. |
+
+**Screenshot**
+
+<p align="center">
+  <img src="./Assets/getUserProfile.png" alt="GET User Profile - 200 OK" width="900">
+</p>
