@@ -12,7 +12,6 @@ export const createUser = async (
     user: RegisterUser,
     passwordHash: string
 ): Promise<User> => {
-
     const result = await query(
         `INSERT INTO users (name, email, password_hash, role) 
          VALUES ($1, $2, $3, $4)

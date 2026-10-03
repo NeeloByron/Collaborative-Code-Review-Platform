@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { createUser, findUserByEmail } from "../service/userServices";
 import { RegisterUser } from "../types/application.types";
+import jwt from "jsonwebtoken";
 
 // Register a new user
 export const registerUser = async (req: Request, res: Response) => {
@@ -49,7 +50,7 @@ export const registerUser = async (req: Request, res: Response) => {
        // Do not return password_hash
        const { password_hash, ...publicUser} = newUser;
 
-       return res.status(201).json({
+    return res.status(201).json({
         message: "User registered successfully",
         user: publicUser
 
@@ -63,3 +64,35 @@ export const registerUser = async (req: Request, res: Response) => {
         });
       }
     };
+
+    // login in an existing user
+    export const loginUser = async (req: Request, res: Response) => {
+        try {
+            const { email, password } = req.body ?? {};
+            
+            // check that email and password are non empty strings
+            if (
+                typeof email !== "string" || !email.trim() || typeof password !== "string" || !password.trim()) {
+                    return res.status(400).json({
+                        message: "Email and password are required"
+                    });
+                }
+
+            // Find the account using the supplied email
+            const user = await findUserByEmail(email);
+
+            if (!user) {
+                return res.status(401).json({
+                    message: "Invalid email or password"
+                });
+            }
+
+            // compare the supplied password with the saved hash
+            const passwordMatches {
+                return res.status(401).json({
+                    message: "Invalid email or pass"
+                });
+            }
+            
+        }
+    }
