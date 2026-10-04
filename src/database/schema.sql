@@ -40,3 +40,15 @@ CREATE TABLE comments (
 
 -- Display picture
 display_picture TEXT,
+
+-- Store which users belong to each project
+CREATE TABLE IF NOT EXISTS project_members (
+    project_id INTEGER NOT NULL
+      REFERENCES projects(id) ON DELETE CASCADE,
+
+    user_id INTEGER NOT NULL
+      REFERENCES users(id) ON DELETE CASCADE,
+
+  -- Prevent adding the same user to the same project twice
+    PRIMARY KEY (project_id, user_id)   
+);

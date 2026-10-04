@@ -11,16 +11,19 @@ Collaborative-Code-Review-Platform/
 │   │   └── database.ts
 │   ├── controllers/
 │   │   ├── authController.ts
-│   │   └── userController.ts
+│   │   ├── userController.ts
+│   │   └── projectController.ts
 │   ├── database/
 │   │   └── schema.sql
 │   ├── middleware/
 │   │   └── authMiddleware.ts
 │   ├── routes/
 │   │   ├── authRoutes.ts
-│   │   └── userRoutes.ts
+│   │   ├── userRoutes.ts
+│   │   └── projectRoutes.ts
 │   ├── service/
-│   │   └── userServices.ts
+│   │   ├── userServices.ts
+│   │   └── projectServices.ts
 │   ├── types/
 │   │   └── application.types.ts
 │   └── server.ts
@@ -31,7 +34,11 @@ Collaborative-Code-Review-Platform/
 │   ├── updateUserProfile.png
 │   ├── invalidProfileUpdate.png
 │   ├── profileAccessDenied.png
-│   └── deleteUserProfile.png
+│   ├── deleteUserProfile.png
+│   ├── createProject.png
+│   ├── listProjects.png
+│   ├── addProjectMember.png
+│   └── removeProjectMember.png
 ├── .env
 ├── .gitignore
 ├── package.json
@@ -347,3 +354,155 @@ Accounts linked to projects, submissions, or comments cannot be deleted and retu
 | Attempt to change role through profile updates | 400 Bad Request | Passed |
 | Attempt to update another user's profile | 403 Forbidden | Passed |
 | Delete own disposable account | 200 OK | Passed |
+
+## Sprint 3 - Projects & Membership
+
+All project endpoints require a valid login token. In Postman, select **Authorization → Bearer Token** and paste your token.
+
+### Create Project
+
+Creates a project owned by the logged-in user. The owner ID comes from the verified token.
+
+**Endpoint**
+
+```http
+POST http://localhost:5000/api/projects
+```
+
+**Example Request Body**
+
+```json
+{
+  "name": "Weather App",
+  "description": "A weather application whose code needs reviewing."
+}
+```
+
+**Successful Response — 201 Created**
+
+```json
+{
+  "message": "Project created successfully",
+  "project": {
+    "id": 1,
+    "name": "Weather App",
+    "description": "A weather application whose code needs reviewing.",
+    "owner_id": 1
+  }
+}
+```
+
+<p align="center">
+  <img src="./Assets/createProject.png" alt="POST Create Project - 201 Created" width="900">
+</p>
+
+### List Projects
+
+Returns projects the logged-in user owns or belongs to. No request body is required.
+
+**Endpoint**
+
+```http
+GET http://localhost:5000/api/projects
+```
+
+**Successful Response — 200 OK**
+
+```json
+{
+  "message": "Projects retrieved successfully",
+  "projects": [
+    {
+      "id": 1,
+      "name": "Weather App",
+      "description": "A weather application whose code needs reviewing.",
+      "owner_id": 1
+    }
+  ]
+}
+```
+
+<p align="center">
+  <img src="./Assets/listProjects.png" alt="GET List Projects - 200 OK" width="900">
+</p>
+
+### Add Project Member
+
+Allows the project owner to add an existing reviewer. Use the owner's token for this request.
+
+**Endpoint**
+
+```http
+POST http://localhost:5000/api/projects/1/members
+```
+
+Replace `1` with your project ID. The `user_id` below is the reviewer's user ID.
+
+**Example Request Body**
+
+```json
+{
+  "user_id": 3
+}
+```
+
+**Successful Response — 201 Created**
+
+```json
+{
+  "message": "Reviewer added successfully",
+  "member": {
+    "project_id": 1,
+    "user_id": 3
+  }
+}
+```
+
+<p align="center">
+  <img src="./Assets/addProjectMember.png" alt="POST Add Project Reviewer - 201 Created" width="900">
+</p>
+
+### Remove Project Member
+
+Allows the project owner to remove a member. This removes the membership, not the user's account.
+
+**Endpoint**
+
+```http
+DELETE http://localhost:5000/api/projects/1/members/3
+```
+
+Here, `1` is the project ID and `3` is the member's user ID.
+
+Use the owner's token and select **Body → none**.
+
+**Successful Response — 200 OK**
+
+```json
+{
+  "message": "Member removed successfully"
+}
+```
+
+<p align="center">
+  <img src="./Assets/removeProjectMember.png" alt="DELETE Project Membership - 200 OK" width="900">
+</p>
+
+### Project Error Responses
+
+| Status | Meaning |
+|---|---|
+| 400 Bad Request | Invalid request data, adding a non-reviewer, or attempting to remove the owner. |
+| 401 Unauthorized | Missing, invalid, or expired token. |
+| 403 Forbidden | A non-owner attempts to manage project members. |
+| 404 Not Found | The requested project, reviewer, or membership does not exist. |
+| 409 Conflict | Duplicate membership, attempting to add the owner, or a referenced record was deleted. |
+
+### Project Test Results
+
+| Test | Expected Status | Result |
+|---|---|---|
+| Create a project | 201 Created | Passed |
+| List the owner's projects | 200 OK | Passed |
+| Add a reviewer to a project | 201 Created | Passed |
+| Remove a project member | 200 OK | Passed |
