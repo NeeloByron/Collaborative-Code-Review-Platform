@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { UserRole } from "../types/application.types";
 
 // Describe the user information stored inside our token
 interface AuthUser {
@@ -71,4 +72,27 @@ export const authenticate = (
 
     // The token passed the checks; continue to the next handler
     next();
+};
+
+// check whether the logged in user's role is allowed
+export const authorizeRoles = (...allowedRoles: UserRole[]) => {
+    return (req: AuthRequest, res: Response, next: NextFunction)
+: void => {
+    // the user must be authenticated first
+    if (!req.user) {
+        res.status(401).json({
+            message: "Authentication required"
+        });
+        return;
+    }
+
+     // block roles that are not on the allowed list
+    if (!allowedRoles.includes(req.user.role)) {
+          res.status(403).json({
+            message: "You do not have permission to perform this action"
+         });
+         return
+      }
+    next();
+   };
 };
