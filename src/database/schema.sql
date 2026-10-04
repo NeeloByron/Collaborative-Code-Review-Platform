@@ -83,3 +83,27 @@ CREATE TABLE IF NOT EXISTS reviews (
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Record when a submission was created
+ALTER TABLE submissions
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ
+NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- Store notifications for individual users
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+
+    user_id INTEGER NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+
+    submission_id INTEGER
+        REFERENCES submissions(id) ON DELETE SET NULL,
+
+    message TEXT NOT NULL,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Help retrieve a user's latest notifications efficiently
+CREATE INDEX IF NOT EXISTS notifications_user_created_idx
+ON notifications (user_id, created_at DESC, id DESC);
