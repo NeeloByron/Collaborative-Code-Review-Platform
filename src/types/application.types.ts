@@ -7,6 +7,7 @@ export interface User {
     email: string;
     password_hash: string;
     role: UserRole;
+    display_picture: string | null;
 }
 
 // Represent the information needed to register
@@ -21,3 +22,8 @@ export type LoginUser = Pick<User, "email"> & {
 
 // removes password_hash when returning user information 
 export type PublicUser = Omit<User, "password_hash">;
+
+// fields users are allowed to change in their own profile 
+export type UpdateProfile = Partial<
+    Pick<User, "name" | "email" | "display_picture">
+>;

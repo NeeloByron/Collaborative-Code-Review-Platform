@@ -37,3 +37,6 @@ CREATE TABLE comments (
     content TEXT NOT NULL,
     line_number INTEGER -- NULL for general feedback, line number for inline feedback
 );
+
+-- Display picture
+display_picture TEXT,
