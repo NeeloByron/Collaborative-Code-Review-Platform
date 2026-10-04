@@ -52,3 +52,34 @@ CREATE TABLE IF NOT EXISTS project_members (
   -- Prevent adding the same user to the same project twice
     PRIMARY KEY (project_id, user_id)   
 );
+
+-- Keep a history of submission status changes
+CREATE TABLE IF NOT EXISTS reviews (
+    id SERIAL PRIMARY KEY,
+
+    submission_id INTEGER NOT NULL
+        REFERENCES submissions(id),
+
+    reviewer_id INTEGER NOT NULL
+        REFERENCES users(id),
+
+    previous_status VARCHAR(30) NOT NULL
+        CHECK (previous_status IN (
+            'pending',
+            'in_review',
+            'approved',
+            'changes_requested'
+        )),
+
+    status VARCHAR(30) NOT NULL
+        CHECK (status IN (
+            'pending',
+            'in_review',
+            'approved',
+            'changes_requested'
+        )),
+
+    feedback TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

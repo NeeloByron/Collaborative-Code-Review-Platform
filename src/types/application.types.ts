@@ -86,3 +86,22 @@ export interface CreateComment {
 
 // allows users to update comment text, its line number or both
 export type UpdateComment = Partial<CreateComment>;
+
+// Describe the two decisions available through the review endpoints
+export type ReviewDecision = "approved" | "changes_requested";
+
+// Represent a saved review-history entry
+export interface SubmissionReview {
+    id: number;
+    submission_id: number;
+    reviewer_id: number;
+    previous_status: SubmissionStatus;
+    status: SubmissionStatus;
+    feedback: string | null;
+    created_at: Date;
+}
+
+// Describe optional written feedback accompanying a decision
+export interface ReviewInput {
+    feedback?: string;
+}
