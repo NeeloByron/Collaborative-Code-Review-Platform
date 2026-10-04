@@ -68,3 +68,21 @@ export interface CreateSubmission {
     title: string;
     code: string;
 }
+
+// represnts feedback saved against a code submission
+export interface ReviewComment {
+    id: number;
+    submission_id: number;
+    author_id:  number;
+    content: string;
+    line_number: number | number;
+}
+
+// describes the information required to create a comment
+export interface CreateComment {
+    content: string;
+    line_number?: number | null;
+}
+
+// allows users to update comment text, its line number or both
+export type UpdateComment = Partial<CreateComment>;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/authMiddleware";
 import { createProjectHandler, listProjectsHandler, addProjectMemberHandler, removeProjectMemberHandler } from "../controllers/projectController";
+import { listProjectSubmissionsHandler } from "../controllers/submissionController";
 
 const router = Router();
 
@@ -18,5 +19,8 @@ router.post("/:id/members", addProjectMemberHandler);
 
 // Allow the project owner to remove a member
 router.delete("/:id/members/:userId", removeProjectMemberHandler);
+
+// list submissions belonging to a project the user can access
+router.get("/:id/submission", listProjectSubmissionsHandler);
 
 export default router;
