@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate, authorizeRoles } from "../middleware/authMiddleware";
 import { getUserProfile, updateuserProfile, deleteUserProfile } from "../controllers/userController";
+import { getUserNotificationsHandler } from "../controllers/notificationController";
 
 const router = Router();
 
@@ -15,4 +16,8 @@ router.patch("/:id", authenticate, authorizeRoles("reviewer", "submitter"), upda
 
 // verify the token and role before deleting the user's own account
 router.delete("/:id", authenticate, authorizeRoles("reviewer", "submitter"), deleteUserProfile);
+
+// verify the token before retrieving the user's own notifications
+router.get("/:id/notifications", authenticate, getUserNotificationsHandler)
+
 export default router;
