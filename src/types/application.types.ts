@@ -27,3 +27,24 @@ export type PublicUser = Omit<User, "password_hash">;
 export type UpdateProfile = Partial<
     Pick<User, "name" | "email" | "display_picture">
 >;
+
+// sprint 3: Projects
+// represent a project stored in the database
+export interface Project {
+    id: number;
+    name: string;
+    description: string | null;
+    owner_id: number;
+}
+
+// describe the information needed to create a project
+export interface CreateProject {
+    name: string;
+    description?: string;
+}
+
+// represent one user's membership in a project
+export interface ProjectMember {
+    project_id: number;
+    user_id: number;
+}
