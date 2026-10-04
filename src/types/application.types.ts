@@ -37,7 +37,7 @@ export interface Project {
     owner_id: number;
 }
 
-// describe the information needed to create a project
+// describes the information needed to create a project
 export interface CreateProject {
     name: string;
     description?: string;
@@ -47,4 +47,24 @@ export interface CreateProject {
 export interface ProjectMember {
     project_id: number;
     user_id: number;
+}
+
+// describes the allowed stages of a code review
+export type SubmissionStatus = | "pending" | "in_review" | "approved" | "changes_requested";
+
+// represents a code submission stored in the database 
+export interface Submission {
+    id: number;
+    project_id: number;
+    submitter_id: number;
+    title: string;
+    code: string;
+    status: SubmissionStatus;
+}
+
+// describes the information a user sends to create a submission
+export interface CreateSubmission {
+    project_id: number;
+    title: string;
+    code: string;
 }
