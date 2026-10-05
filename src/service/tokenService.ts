@@ -11,7 +11,7 @@ export const getAuthenticatedAccount = async (authorization: string | undefined)
     }
 
     // extract the token from "Bearer token"
-    const match = authorization?.match(/^Bearer\s+(\s+)$/i);
+    const match = authorization?.match(/^Bearer\s+(\S+)$/i);
     if (!match) return null;
 
     let decoded;

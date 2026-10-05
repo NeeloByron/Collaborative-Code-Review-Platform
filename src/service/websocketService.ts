@@ -110,13 +110,8 @@ export const setupWebSocket = (server: Server): void => {
             if (socket.destroyed) return;
 
             // Complete the connection only after authentication succeeds
-            websocketServer.handleUpgrade(
-                request,
-                socket,
-                head,
-                connection => {
-                    const connections =
-                        userConnections.get(user.id) ?? new Set<WebSocket>();
+            websocketServer.handleUpgrade( request, socket, head, connection => {
+                    const connections = userConnections.get(user.id) ?? new Set<WebSocket>();
 
                     connections.add(connection);
                     userConnections.set(user.id, connections);
@@ -163,9 +158,7 @@ export const setupWebSocket = (server: Server): void => {
 };
 
 // Deliver a saved notification only to its recipient's connections
-export const sendLiveNotification = async (
-    notification: UserNotification
-): Promise<void> => {
+export const sendLiveNotification = async ( notification: UserNotification ): Promise<void> => {
     const connections = userConnections.get(notification.user_id);
 
     // Offline users can retrieve the saved notification through the REST API
