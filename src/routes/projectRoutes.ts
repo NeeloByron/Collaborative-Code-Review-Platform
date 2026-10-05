@@ -2,11 +2,15 @@ import { Router } from "express";
 import { authenticate } from "../middleware/authMiddleware";
 import { createProjectHandler, listProjectsHandler, addProjectMemberHandler, removeProjectMemberHandler } from "../controllers/projectController";
 import { listProjectSubmissionsHandler } from "../controllers/submissionController";
+import { getProjectStatsHandler } from "../controllers/statsController";
 
 const router = Router();
 
 // Require a valid login token for every project endpoint
 router.use(authenticate);
+
+// GET /api/projects/:id/stats - owner and member statistics.
+router.get("/:id/stats", getProjectStatsHandler);
 
 // Create a project owned by the logged-in user
 router.post("/", createProjectHandler);

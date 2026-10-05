@@ -131,7 +131,7 @@ export interface MostCommentedSubmission {
 }
 
 // represents the project's review statistics
-export interface ProjectStates {
+export interface ProjectStats {
     project_id: number;
     total_submissions: number;
     pending_count: number;
