@@ -107,3 +107,27 @@ CREATE TABLE IF NOT EXISTS notifications (
 -- Help retrieve a user's latest notifications efficiently
 CREATE INDEX IF NOT EXISTS notifications_user_created_idx
 ON notifications (user_id, created_at DESC, id DESC);
+
+-- Record when a submission was created
+ALTER TABLE submissions
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ
+NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+    submission_id INTEGER
+        REFERENCES submissions(id) ON DELETE SET NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXIST notifications user created idx
+ON notifications (user_id, created_at DESC, id DESC);
+
+CREATE IF NOT EXISTS reviews submission created idx
+ON reviews(submission id, created at);
+
+CREATE INDEX IF NOT EXISTS comments submission idx
+ON comments(submission_id, id);

@@ -1,19 +1,16 @@
+import { PoolClient } from "pg";
 import { query } from "../config/database";
 import { UserNotification } from "../types/application.types";
 
 // Save a notification for one user
-export const createNotification = async ( userId: number, submissionId: number | null, message: string ): Promise<UserNotification> => {
-    const result = await query(
-        `INSERT INTO notifications (
-            user_id,
-            submission_id,
-            message
-         )
-         VALUES ($1, $2, $3)
-         RETURNING id, user_id, submission_id, message, created_at`,
-        [userId, submissionId, message]
-    );
-
+export const createNotification = async ( userId: number, submissionId: number | null, message: string, client?: PoolClient  ): Promise<UserNotification> => {
+    const sql = `INSERT INTO notifications
+        (user_id, submission_id, message)
+        VALUES ($1, $2, $3) RETURNING *`;
+    const values = [userId, submissionId, message];
+    const result = client
+        ? await client.query(sql, values)
+        : await query(sql, values);
     return result.rows[0];
 };
 
