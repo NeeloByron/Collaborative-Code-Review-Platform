@@ -1,13 +1,17 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/authMiddleware";
+import { authenticate, authorizeRoles } from "../middleware/authMiddleware";
 import { createSubmissionHandler, getSubmissionHandler, updateSubmissionStatusHandler, deleteSubmissionHandler } from "../controllers/submissionController";
 import { createCommentHandler, listCommentsHandler } from "../controllers/commentController";
 import { approveSubmissionHandler, requestChangesHandler, listSubmissionReviewsHandler } from "../controllers/reviewController";
+import { uploadSubmissionFile, prepareSubmissionFile } from "../middleware/submissionUpload";
 
 const router = Router();
 
 // Require a valid login token for every submission endpoint
 router.use(authenticate);
+
+// POST /api/submission/upload submit a text/code file
+router.post("/upload", authorizeRoles("submitter"), uploadSubmissionFile, prepareSubmissionFile, createCommentHandler);
 
 // POST /api/submissions/:id/approve - approve submitted code.
 router.post("/:id/approve", approveSubmissionHandler);
