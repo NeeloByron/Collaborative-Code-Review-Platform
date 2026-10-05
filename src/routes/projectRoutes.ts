@@ -21,6 +21,6 @@ router.post("/:id/members", addProjectMemberHandler);
 router.delete("/:id/members/:userId", removeProjectMemberHandler);
 
 // list submissions belonging to a project the user can access
-router.get("/:id/submission", listProjectSubmissionsHandler);
+router.get("/:id/submissions", listProjectSubmissionsHandler);
 
 export default router;
