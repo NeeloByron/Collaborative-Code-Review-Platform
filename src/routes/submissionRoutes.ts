@@ -1,11 +1,26 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/authMiddleware";
+import { authenticate, authorizeRoles } from "../middleware/authMiddleware";
 import { createSubmissionHandler, getSubmissionHandler, updateSubmissionStatusHandler, deleteSubmissionHandler } from "../controllers/submissionController";
 import { createCommentHandler, listCommentsHandler } from "../controllers/commentController";
+import { approveSubmissionHandler, requestChangesHandler, listSubmissionReviewsHandler } from "../controllers/reviewController";
+import { uploadSubmissionFile, prepareSubmissionFile } from "../middleware/submissionUpload";
+
 const router = Router();
 
 // Require a valid login token for every submission endpoint
 router.use(authenticate);
+
+// POST /api/submission/upload submit a text/code file
+router.post("/upload", authorizeRoles("submitter"), uploadSubmissionFile, prepareSubmissionFile, createCommentHandler);
+
+// POST /api/submissions/:id/approve - approve submitted code.
+router.post("/:id/approve", approveSubmissionHandler);
+
+// POST /api/submissions/:id/request-changes - request improvements.
+router.post("/:id/request-changes", requestChangesHandler);
+
+// GET /api/submissions/:id/reviews - view submission review history.
+router.get("/:id/reviews", listSubmissionReviewsHandler);
 
 // allows a reviewer with project access to comment on a submission
 router.post("/:id/comments", createCommentHandler);

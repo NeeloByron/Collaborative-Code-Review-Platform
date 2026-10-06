@@ -86,3 +86,61 @@ export interface CreateComment {
 
 // allows users to update comment text, its line number or both
 export type UpdateComment = Partial<CreateComment>;
+
+// Describe the two decisions available through the review endpoints
+export type ReviewDecision = "approved" | "changes_requested";
+
+// Represent a saved review-history entry
+export interface SubmissionReview {
+    id: number;
+    submission_id: number;
+    reviewer_id: number;
+    previous_status: SubmissionStatus;
+    status: SubmissionStatus;
+    feedback: string | null;
+    created_at: Date;
+}
+
+// Describe optional written feedback accompanying a decision
+export interface ReviewInput {
+    feedback?: string;
+}
+
+// represents one saved activity notification
+export interface UserNotification {
+    id: number;
+    user_id: number;
+    submission_id: number | null;
+    message: string;
+    created_at: Date;
+}
+
+// represents one reviewer's activity within a project
+export interface ReviewerActivity {
+    reviewer_id: number;
+    reviewer_name: string;
+    review_count: number;
+    comment_count: number;
+}
+
+// represent the submission with the most comments
+export interface MostCommentedSubmission {
+    submission_id: number;
+    title: string;
+    comment_count: number;
+}
+
+// represents the project's review statistics
+export interface ProjectStats {
+    project_id: number;
+    total_submissions: number;
+    pending_count: number;
+    in_review_count: number;
+    approved_count: number;
+    changes_requested_count: number;
+    average_first_review_hours: number | null;
+    approval_percentage: number | null;
+    changes_requested_percentage: number | null;
+    reviewer_activity: ReviewerActivity[];
+    most_commented_submission: MostCommentedSubmission | null;
+}

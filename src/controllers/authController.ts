@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import { createUser, findUserByEmail } from "../service/userServices";
 import { RegisterUser } from "../types/application.types";
 import jwt from "jsonwebtoken";
 
 // Register a new user
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction ) => {
     try {
         const { name, email, password, role }: RegisterUser = req.body;
 
@@ -55,17 +55,14 @@ export const registerUser = async (req: Request, res: Response) => {
 
        });
 
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            message: "Internal server error"
-        });
-      }
-    };
+   } catch (error) {
+        // Forward unexpected failures to the shared error handler.
+        next(error);
+    }
+};
 
     // login in an existing user
-    export const loginUser = async (req: Request, res: Response) => {
+    export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { email, password } = req.body ?? {};
             
@@ -127,11 +124,8 @@ export const registerUser = async (req: Request, res: Response) => {
                     role: user.role
                 }
             });
-        } catch (error) {
-            console.error(error);
-
-            return res.status(500).json({
-                message: "Internal server error"
-            });
-        }
-    };
+            } catch (error) {
+        // Forward unexpected failures to the shared error handler.
+        next(error);
+    }
+};
