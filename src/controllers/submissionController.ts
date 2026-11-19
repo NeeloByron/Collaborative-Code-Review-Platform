@@ -4,6 +4,7 @@ import { PublicUser, Submission, SubmissionStatus } from "../types/application.t
 import { findUserById } from "../service/userServices";
 import { findProjectById } from "../service/projectServices";
 import { hasProjectAccess, createSubmission, findSubmissionsByProject, findSubmissionById, updateSubmissionStatus, deleteSubmissionById } from "../service/submissionServices";
+import { saveSubmissionReview } from "../service/reviewServices";
 
 // Convert a valid positive ID into a number
 const parseId = (value: unknown): number | null => {
@@ -312,22 +313,25 @@ export const updateSubmissionStatusHandler = async ( req: AuthRequest, res: Resp
             return;
         }
 
-        const submission = await updateSubmissionStatus(
+        const result = await saveSubmissionReview(
             submissionId,
+            user.id,
             status as SubmissionStatus
         );
 
         // Handle a submission removed after the earlier lookup
-        if (!submission) {
+        if (!result) {
             res.status(404).json({
                 message: "Submission not found"
             });
             return;
         }
-
+         
+        // return the updated submission and the saved history entry
         res.status(200).json({
             message: "Submission status updated successfully",
-            submission
+            submission: result.submission,
+            review: result.review
         });
     } catch (error) {
         handleSubmissionError(error, res);

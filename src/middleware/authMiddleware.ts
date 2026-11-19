@@ -1,98 +1,71 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import { UserRole } from "../types/application.types";
+import { getAuthenticatedAccount } from "../service/tokenService";
 
-// Describe the user information stored inside our token
-interface AuthUser {
-    id: number;
-    role: "reviewer" | "submitter";
-}
-
-// allow protected requests to carry the verified user
+// Describe the account details attached to a protected request.
 export interface AuthRequest extends Request {
-    user?: AuthUser;
+    user?: {id: number; 
+            role: UserRole;
+    };
 }
 
-// check the login token before allowing a request through
-export const authenticate = (
-    req: AuthRequest, res: Response, next: NextFunction
-): void => {
-    const authorization = req.headers.authorization;
+// Check the login token and confirm the account still exists.
+export const authenticate = async ( req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const account = await getAuthenticatedAccount(
+            req.headers.authorization
+        );
 
-    // expect a header containing: Bearer followed by the token
-    const parts = authorization?.trim().split(/\s+/);
-    if (
-        !parts || parts.length !== 2 || parts[0].toLowerCase() !== "bearer") {
+        // Reject missing, invalid or expired tokens and missing accounts.
+        if (!account) {
             res.status(401).json({
-                message: "A Bearer token is required"
+                message: "Missing, invalid or expired login token"
             });
             return;
         }
-        
-        const token = parts[1];
-        const jwtSecret = process.env.JWT_SECRET;
 
-        // a missing server setting is a configuration error
-        if (!jwtSecret) {
-           console.error("JWT_SECRET is not configured");
+        // Use the user's current database role.
+        req.user = {
+            id: account.user.id,
+            role: account.user.role
+        };
+    } catch (error) {
+        // Handle unexpected failures, such as database connection errors.
+        console.error(error);
 
-           res.status(500).json({
+        res.status(500).json({
             message: "Internal server error"
-           });
-           return;
-        }
-        
-        try {
-            // check the token's signature and expiry
-            const decoded = jwt.verify(token, jwtSecret, {
-                algorithms: ["HS256"]
-            });
-
-            // confirm the token contains the user details we expect
-         if (
-             typeof decoded === "string" || typeof decoded.id !== "number" || !Number.isInteger(decoded.id) || decoded.id <= 0 || (decoded.role !== "reviewer" &&
-                    decoded.role !== "submitter")) {
-                        res.status(401).json({
-                        message: "Invalid token"
-                     });
-                     return;
-                }
-
-        // attach the verified information to this request 
-            req.user = {
-                id: decoded.id,
-                role: decoded.role
-              };
-          } catch {
-          res.status(401).json({
-                 message: "Invalid or expired token"
-          });
-          return;
-        }
-
-    // The token passed the checks; continue to the next handler
-    next();
-};
-
-// check whether the logged in user's role is allowed
-export const authorizeRoles = (...allowedRoles: UserRole[]) => {
-    return (req: AuthRequest, res: Response, next: NextFunction)
-: void => {
-    // the user must be authenticated first
-    if (!req.user) {
-        res.status(401).json({
-            message: "Authentication required"
         });
         return;
     }
 
-     // block roles that are not on the allowed list
-    if (!allowedRoles.includes(req.user.role)) {
-          res.status(403).json({
-            message: "You do not have permission to perform this action"
-         });
-         return
-      }
+    // Authentication succeeded; continue to the next handler.
     next();
-   };
+};
+
+// Allow only the specified roles to access a route.
+export const authorizeRoles = (...allowedRoles: UserRole[]) => {
+    return (
+        req: AuthRequest,
+        res: Response,
+        next: NextFunction
+    ): void => {
+        // Authentication must run before this role check.
+        if (!req.user) {
+            res.status(401).json({
+                message: "Authentication required"
+            });
+            return;
+        }
+
+        // Reject users whose role is not allowed.
+        if (!allowedRoles.includes(req.user.role)) {
+            res.status(403).json({
+                message: "You do not have permission to perform this action"
+            });
+            return;
+        }
+
+        next();
+    };
 };
